@@ -1,0 +1,66 @@
+## library("dplyr")
+## library("tidyr")
+
+`%!in%` = Negate(`%in%`)
+
+input_file <- "C:/Users/JV/Desktop/R - Springboard/DallasCrimeData/Police_Incidents.tsv"
+output_file <- "C:/Users/JV/Desktop/R - Springboard/DallasCrimeData/Police_Incidents_clean.csv"
+
+## Read the CSV into a dataframe
+crimedata <- read.delim(input_file, header = TRUE,sep = "\t", check.names = FALSE, stringsAsFactors = FALSE)
+
+## Check the columns that contains the missing values
+## View(colnames(crimedata)[colSums(is.na(crimedata)) > 0])
+
+## Year cannot be more the 2019. 
+current_year <- as.integer(format(Sys.Date(), "%Y"))
+crimedata$`Year of Incident`[crimedata$`Year of Incident`> current_year] = current_year
+crimedata$`Year1 of Occurrence`[crimedata$`Year1 of Occurrence`> current_year] = current_year
+crimedata$`Year2 of Occurrence`[crimedata$`Year2 of Occurrence`> current_year] = current_year
+
+## Remove rows with `Year of Incident` 2005,2009,2010,2011,2013
+crimedata <- crimedata %>% filter(`Year of Incident` %!in% c(2005, 2009, 2010, 2011, 2013))
+
+## Age - Reset values greater than 125 to 125
+crimedata$`Victim Age`[crimedata$`Victim Age` > 125 ] = 125
+
+## Age - Replace the missing values with the mean value
+avg_age <- mean(crimedata$`Victim Age`, na.rm = TRUE)
+crimedata$`Victim Age`[which(is.na(crimedata$`Victim Age`))] = round(avg_age)
+
+## Age - Age cannot be a negative value. 
+crimedata$`Victim Age` <- ifelse(crimedata$`Victim Age`< 0 , abs(crimedata$`Victim Age`) , crimedata$`Victim Age`)
+
+## Victim Age should be always greater than or equal to Victim Age at Offense
+
+## Weapon used - Replace the missing value with "None"
+## crimedata$`Weapon Used`[which(crimedata$`Weapon Used` == "")] = "None"
+
+## Division - Change all the values to Upper case and handle missing values
+tmp <- crimedata %>% mutate(new_division = toupper(Division))
+crimedata$Division <- tmp$new_division
+
+##No need to do this??? 
+crimedata$Division[which(crimedata$Division == "")] = NA
+
+## UCR Offense Name - Crime Category - Replace the missing value with OTHERS
+crimedata$`UCR Offense Name`[which(crimedata$`UCR Offense Name` == "")] = "OTHERS"
+
+## DAY# of the Week - Replace the missing value 
+## crimedata$`Day1 of the Week`[which(crimedata$`Day1 of the Week` == "")] = "None"
+## crimedata$`Day2 of the Week`[which(crimedata$`Day2 of the Week` == "")] = "None"
+
+## Time of the day - Validate the time value
+## temp1 <- ifelse(strptime(as.character(crimedata$`Time1 of Occurrence`), format = "%H:%M"), crimedata$`Time1 of Occurrence`, 0)
+
+## Day of the Year - Handle missing values. Set Outliers. Values cannot be more than 366
+crimedata$`Day1 of the Year`[which(is.na(crimedata$`Day1 of the Year`))] = 0
+crimedata$`Day2 of the Year`[which(is.na(crimedata$`Day2 of the Year`))] = 0
+crimedata$`Day1 of the Year`[which(crimedata$`Day1 of the Year` > 366)] = 366
+crimedata$`Day2 of the Year`[which(crimedata$`Day2 of the Year` > 366)] = 366
+
+
+crimedata %>% distinct(`Day2 of the Year`) %>% View()
+
+## Write the cleaned dataset to a file.
+write.csv(crimedata, output_file, row.names = FALSE)
