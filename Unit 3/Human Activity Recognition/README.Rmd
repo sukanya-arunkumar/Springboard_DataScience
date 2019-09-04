@@ -1,0 +1,17 @@
+---
+title: README - Human Activity Recognition - Samsung Galaxy S Smartphone dataset"
+output: html_document
+---
+
+The R script *humanactivityrecognition.R* cleans the dataset obtained from the Samsung Galaxy S Smartphone. The following steps are performed for tidying  up the data
+
+1. Gather train data
+2. Gather test data
+3. Merge train and test data
+4. Add new variables - ActivityLabel, ActivityName
+5. Extract the mean and standard deviation measurements and Calculate the mean of each mean and standard deviation measurement for each activity
+6. Creates a second, independent tidy data set with the average of each variable for each activity and each subject. The resultant dataset is written to the file meanSD.csv
+
+The cleaned up dataset is written to the file tidy_data.csv
+
+Note : For more details, refer CodeBook.html
