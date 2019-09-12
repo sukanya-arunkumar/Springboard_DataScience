@@ -1,0 +1,34 @@
+Springboard Capstone Project
+----------------------------
+
+This is the repository for the Springboard capstone project (for the
+coruse - Introduction to Data Science) titled "Dallas Crime data".
+
+Problem
+-------
+
+The objective of this project is to predict the crime rate in Dallas for
+the next year based on the data available from June 2014 to August 2019.
+We also aim to find the day and time of the year when most crimes happen
+in the city, which areas in the city has less crime rates.
+
+Data
+----
+
+The data is collected from
+[www.dallasopendata.com](https://www.dallasopendata.com/Public-Safety/Police-Incidents/qv6i-rri7)
+
+Approach
+--------
+
+-   Understand the Data
+-   Clean the data and prepare it for analysis
+-   Build a model for the problem we are trying to solve
+-   Make predictions based on the model
+
+Deliverables
+------------
+
+-   R scripts
+-   R makrdown documents
+-   Slide deck summarizing the analysis
