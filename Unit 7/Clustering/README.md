@@ -36,6 +36,8 @@ the graph can suggest the appropriate number of clusters.
                                 ylab="Within groups sum of squares")
            }
 
+    wssplot(df)
+
 ![](README_files/figure-markdown_strict/unnamed-chunk-4-1.png)
 
 Exercise 2: - How many clusters does this method suggest? - Why does
@@ -43,6 +45,8 @@ this method work? What's the intuition behind it? - Look at the code for
 wssplot() and figure out how it works
 
 This method clearly suggests 3 clusters.
+
+    nc <- NbClust(df, min.nc=2, max.nc=15, method="kmeans")
 
 ![](README_files/figure-markdown_strict/unnamed-chunk-6-1.png)
 
@@ -75,7 +79,11 @@ This method clearly suggests 3 clusters.
     ##  
     ## *******************************************************************
 
-![](README_files/figure-markdown_strict/unnamed-chunk-6-3.png)
+    barplot(table(nc$Best.n[1,]),
+                  xlab="Numer of Clusters", ylab="Number of Criteria",
+                        main="Number of Clusters Chosen by 26 Criteria")
+
+![](README_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
 Exercise 3: How many clusters does this method suggest?
 
@@ -104,4 +112,4 @@ Would you consider this a good clustering?
 Exercise 6: - Visualize these clusters using function clusplot() from
 the cluster library - Would you consider this a good clustering?
 
-<img src="README_files/figure-markdown_strict/unnamed-chunk-9-1.png" width="50%" />
+<img src="README_files/figure-markdown_strict/unnamed-chunk-10-1.png" width="50%" />
