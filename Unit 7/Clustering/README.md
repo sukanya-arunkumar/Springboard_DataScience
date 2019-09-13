@@ -98,7 +98,7 @@ variable fit.km
 Now we want to evaluate how well this clustering does.
 
 Exercise 5: using the table() function, show how the clusters in
-fit.km\\*c**l**u**s**t**e**r**s**c**o**m**p**a**r**e**s**t**o**t**h**e**a**c**t**u**a**l**w**i**n**e**t**y**p**e**s**i**n**w**i**n**e*Type.
+fit.km$clusters compares to the actual wine types in wine$Type.
 Would you consider this a good clustering?
 
     table(fit.km$cluster, wine$Type)
