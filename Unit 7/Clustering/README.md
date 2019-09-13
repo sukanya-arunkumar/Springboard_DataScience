@@ -104,4 +104,4 @@ Would you consider this a good clustering?
 Exercise 6: - Visualize these clusters using function clusplot() from
 the cluster library - Would you consider this a good clustering?
 
-![](README_files/figure-markdown_strict/unnamed-chunk-9-1.png)
+<img src="README_files/figure-markdown_strict/unnamed-chunk-9-1.png" width="50%" />
