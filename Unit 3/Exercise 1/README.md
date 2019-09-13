@@ -20,14 +20,15 @@ We can notice that there are few issues with this data.
 1. Clean up brand names
 -----------------------
 
-    knitr::opts_chunk$set(fig.width = 8, collapse = TRUE)
     tmp <- data %>% mutate(new_name = tolower(company))
     tmp1 <- tmp %>% mutate(correct_name = ifelse(grepl("^ak",new_name, ignore.case = TRUE),"akzo", 
                                                  ifelse(grepl("^van",new_name, ignore.case = TRUE),"van houten",
                                                         ifelse(grepl("^uni",new_name, ignore.case = TRUE),"unilever",
                                                                ifelse(grepl("^ph|^fi",new_name, ignore.case = TRUE),"phillips", "NA")))))
     data$company <- tmp1$correct_name
-    data %>% select(company) %>% distinct()
+
+All the company names are converted to lowercase letters and the
+spellings are corrected.
 
     ##      company
     ## 1   phillips
@@ -47,7 +48,10 @@ We can notice that there are few issues with this data.
                                                         ifelse(`Product code` %in% "v", "TV",
                                                                ifelse(`Product code` %in% "x", "Laptop",
                                                                       ifelse(`Product code` %in% "q", "Tablet","NA")))))
-    data %>% select(company, `Product code`, number, `Product category`)
+
+The dataset now has the following values for the variables : company,
+Product code, number and Product category
+
     ##       company Product code number Product category
     ## 1    phillips            p      5       Smartphone
     ## 2    phillips            p     43       Smartphone
