@@ -6,33 +6,31 @@ output: html_document
 
 ### **Introduction**
   Crime has been prevalent over the years and has become a huge concern to us. It should be taken on a serious note and analyzed properly to reduce the crime rate. Hundreds of crimes are reported daily across the country despite having strict rules and regulations. Although the crime statistics in Dallas report an overall downward trend in crime based on data from 18 years, crimes do happen everyday.
-  
-  <center>
-  ![***Dallas Crime Statistics***](https://www.cityrating.com/charts/texas/dallas-violent-crime-per-capita.png#.XVOTMLccRdU.link)
-  </center>
-  
-  We aim at further reducing the crime rate by analyzing the crime incident reports that had happened over the years.This analysis can help alert the security systems and security officials to be prepared on how to deal with them in the future. For this purpose, we have the data that the Dallas Crime department - Records Management System has recorded from June 2014 till August 2019.
+ 
+<center>![**Dallas Crime Statistics**](https://raw.githubusercontent.com/sukanya-arunkumar/Springboard_DataScience/master/Dallas%20Crime%20data/Unit%202/dallas-property-crime-per-capita.png)</center>
+
+  We aim at further reducing the crime rate by analyzing the crime incident reports that had happened over the years.This analysis can help alert the security systems and security officials to be prepared on how to deal with them in the future. For this purpose, we have the data that the Dallas Crime department - Records Management System has recorded from June 2014 till current date (`r Sys.Date()`).
   
 ### **What is the Data about?**
-  The data is from [www.dallasopendata.com](https://www.dallasopendata.com/Public-Safety/Police-Incidents/qv6i-rri7). There are about 100 columns and over 585K records. Each record in the data contains the following data (but not limited to the following only)
+  The data is from [www.dallasopendata.com](https://www.dallasopendata.com/Public-Safety/Police-Incidents/qv6i-rri7). There are about 100 columns and over 585K records. Each record in the data contains the following data
   
   - Incident Number with year : AN RMS generated Incident (or report) number with year
-  - Service Number ID : Incident number, year code, offense number seperated by -
-  - Type of incident
-  - Type location : Location where the incident took place
-  - Type of Property : The target item
-  - Reporting Area, Beat, Division, Sector, Council District, Target Area Action Grids
-  - Date, Year, Month, Time of Occurrence
-  - Offense entered Month, Day, Year, Day, Time
-  - Victim Type, Gender, Name, Race, Ethnicity, Age, Address
-  - Offense status
-  - Victim Condition
-  - Modus Operandi (MO) : Short description of the code
-  - Hate Crime, Hate Crime Description : Yes or No if the offense is a hate crime
-  - Weapon Used
-  - Penal Code : State Penal Violation Code number
-  - UCR details : Details such as UCR Offense Name, Offense Description, Code
-  - NIBRS details : Details such as NIBRS Crime, NIBRS Crime Category, NIBRS Crime Against, NIBRS Code, NIBRS Group, NIBRS Type
+  - Type of Incident : Type of Incident
+  - Year of Incident : Year associated with the incident number
+  - Beat : Geographic area comprised of beats where incident occurred
+  - Division : Geographic area comprised of census blocks where incident occurred (smallest police geography)
+  - Type of Property : The target item. Parkinglot, Motor Vehicle
+  - Date1 of Occurrence : The first date of the date occurrence of the incident
+  - Month1 of Occurence : Month (starting) of the indent based on the Date of Occurrence (Date1)
+  - Time1 of Occurrence : The first (starting) time of the time occurrence of the incident
+  - Day1 of the Week : Day of the indent based on the Date of Occurrence (Date1)
+  - Day1 of the Year : The calender number of the year 1-365 based on Date1
+  - Victim Gender : Victim Gender
+  - Victim Age : Victim Age
+  - Offense status : Status of the offense
+  - UCR Offense Name : UCR Offense Name
+  - Victim Condition : Victim Condition
+  - Weapon Used : Weapon Used
   
 ### **Problem Statement**
   The objective of this project is to analyze the trend in the crimes from the year June 2014 to August 2019. 
@@ -43,15 +41,16 @@ output: html_document
   - Identify the areas in the city where there are less crimes
   - Relationship between crime types and victim’s characteristics
   - Year on year increase in over-all crimes and also specific types of crimes
-  - Predict the crime rate (for each category of crime) for the next year
+  - Predict the crime rate for the next year
 
 ### **Approach to solve the problem**
 
   - Understand and clean the data
-  - Perform data analysis and visulizations
-  - Apply statistics to the data
+  - Perform data analysis and visualizations
+  - Build a model and predict future data
 
 ### **Deliverables**
+
   - R scripts
   - R markdown document briefing the key findings
   - Slide deck summarizing the analysis with relevant details
