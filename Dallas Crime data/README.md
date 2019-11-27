@@ -8,9 +8,9 @@ Problem
 -------
 
 The objective of this project is to predict the crime rate in Dallas for
-the next year based on the data available from June 2014 to August 2019.
-We also aim to find the day and time of the year when most crimes happen
-in the city, which areas in the city has less crime rates.
+the next year based on the data available from June 2014 to current
+date. We also aim to find the day and time of the year when most crimes
+happen in the city, which areas in the city has less crime rates.
 
 Data
 ----
