@@ -1,5 +1,6 @@
 library("dplyr")
 library("tidyr")
+library("lubridate")
 
 `%!in%` = Negate(`%in%`)
 
@@ -7,10 +8,7 @@ input_file <- "C:/Users/JV/Desktop/R - Springboard/DallasCrimeData/Police_Incide
 output_file <- "C:/Users/JV/Desktop/R - Springboard/DallasCrimeData/Police_Incidents_clean.csv"
 
 ## Read the CSV into a dataframe
-crimedata <- read.delim(input_file, header = TRUE,sep = "\t", check.names = FALSE)
-
-## This is for the time being
-crimedata_original <- crimedata
+crimedata <- read.delim(input_file, header = TRUE,sep = "\t", check.names = FALSE, stringsAsFactors = FALSE)
 
 ## Understand the dataset
 summary(crimedata)
@@ -20,72 +18,122 @@ str(crimedata)
 colnames(crimedata)
 
 ## Select only the columns that are needed for the analysis
-crimedata <- crimedata %>% select(`Incident Number w/year`,`Year of Incident`,`Type of Incident`,Beat,Division, `Type of Property`,`Date1 of Occurrence`,`Month1 of Occurence`,`Time1 of Occurrence`,`Day1 of the Week`,`Day1 of the Year`,`Victim Age`,`Victim Gender`, `Offense Status`, `UCR Offense Name`, `Victim Condition`, `Weapon Used`)
+crimedata <- crimedata %>% dplyr::select(`Incident Number w/year`,`Year of Incident`, `Type of Incident`, Beat, Division, `Type of Property`, `Date1 of Occurrence`,`Month1 of Occurence`,`Time1 of Occurrence`,`Day1 of the Week`,`Day1 of the Year`,`Victim Age`,`Victim Gender`, `Offense Status`, `UCR Offense Name`, `Victim Condition`, `Weapon Used`)
 
 ## Check the columns that contains the missing values
 ## View(colnames(crimedata)[colSums(is.na(crimedata)) > 0])
 
-## Year cannot be more the 2019. 
-current_year <- as.integer(format(Sys.Date(), "%Y"))
-crimedata$`Year of Incident`[crimedata$`Year of Incident`> current_year] = current_year
+## Incident Number should be unique
+## Remove all duplicate values of th column Incident Number w/year
+crimedata <- crimedata[!duplicated(crimedata$`Incident Number w/year`), ]
 
-## Remove rows with `Year of Incident` 2005,2009,2010,2011,2013
-crimedata <- crimedata %>% filter(`Year of Incident` %!in% c(2005, 2009, 2010, 2011, 2013))
+## YEAR OF INCIDENT, MONTH OF OCCURRENCE, DAY OF WEEK, DAY OF YEAR are all derived from `DATE OF OCCURRENCE`
+crimedata$`Date1 of Occurrence` <- as.Date(crimedata$`Date1 of Occurrence`, format = "%m/%d/%Y")
+crimedata <- crimedata %>% filter(between(`Date1 of Occurrence`, as.Date("2014-06-01"), Sys.Date()))
+crimedata$`Year of Incident` <- with(crimedata, ifelse(`Year of Incident` == year(`Date1 of Occurrence`), `Year of Incident` , year(`Date1 of Occurrence`) ))
+crimedata$`Month1 of Occurence` <- with(crimedata, ifelse(`Month1 of Occurence` == month(`Date1 of Occurrence`), `Month1 of Occurence`, month(`Date1 of Occurrence`)))
+crimedata$`Day1 of the Year` <- with(crimedata, ifelse(`Day1 of the Year` == yday(`Date1 of Occurrence`), `Day1 of the Year`, yday(`Date1 of Occurrence`)))
+crimedata$`Day1 of the Week` <- with(crimedata, ifelse(`Day1 of the Week` == wday(`Date1 of Occurrence`), `Day1 of the Week`, wday(`Date1 of Occurrence`)))
 
 ## Age - Reset values greater than 125 to 125
 crimedata$`Victim Age`[crimedata$`Victim Age` > 125 ] = 125
 
-## Age - Replace the missing values with the mean value - NO NEED TO DO THIS.AS THIS WILL AFFECT THE MODEL
-##avg_age <- mean(crimedata$`Victim Age`, na.rm = TRUE)
-##crimedata$`Victim Age`[which(is.na(crimedata$`Victim Age`))] = round(avg_age)
-
 ## Age - Age cannot be a negative value. 
 crimedata$`Victim Age` <- ifelse(crimedata$`Victim Age`< 0 , abs(crimedata$`Victim Age`) , crimedata$`Victim Age`)
-
-## Weapon used - Replace the missing value with "None"
-## crimedata$`Weapon Used`[which(crimedata$`Weapon Used` == "")] = "None"
 
 ## Division - Change all the values to Upper case and handle missing values
 tmp <- crimedata %>% mutate(new_division = toupper(Division))
 crimedata$Division <- tmp$new_division
-
-## No need to do this??? 
-## crimedata$Division[which(crimedata$Division == "")] = NA
-
-## UCR Offense Name - Crime Category - Replace the missing value with OTHERS
-##crimedata$`UCR Offense Name`[which(crimedata$`UCR Offense Name` == "")] = "OTHERS"
-
-## Offense Status cannot have Missing value
-##crimedata$`Offense Status`[which(crimedata$`Offense Status` == "")] = "Unknown"
-
-## DAY# of the Week - Replace the missing value 
-## crimedata$`Day1 of the Week`[which(crimedata$`Day1 of the Week` == "")] = "None"
-## crimedata$`Day2 of the Week`[which(crimedata$`Day2 of the Week` == "")] = "None"
-
-## Day of the Year - Handle missing values. Set Outliers. Values cannot be more than 366
-crimedata$`Day1 of the Year`[which(is.na(crimedata$`Day1 of the Year`))] = 0
-crimedata$`Day1 of the Year`[which(crimedata$`Day1 of the Year` > 366)] = 366
+crimedata$Division <- as.factor(crimedata$Division)
 
 ## Find the Season of the Year i.e., Summer/Winter/Fall/Spring
-crimedata <- crimedata %>% mutate(Season = ifelse(`Month1 of Occurence` %in% c("March", "April", "May"), "Spring", 
-                                     ifelse(`Month1 of Occurence`%in% c("June", "July", "August"), "Summer",
-                                           ifelse(`Month1 of Occurence` %in% c("September", "October", "November"), "Fall",
-                                                  ifelse(`Month1 of Occurence` %in% c("December", "January", "February"), "Winter", NA)))))
+crimedata <- crimedata %>% mutate(Season = ifelse(`Month1 of Occurence` %in% c(3,4,5), "Spring", 
+                                     ifelse(`Month1 of Occurence`%in% c(6,7,8), "Summer",
+                                           ifelse(`Month1 of Occurence` %in% c(9,10,11), "Fall",
+                                                  ifelse(`Month1 of Occurence` %in% c(12,1,2), "Winter", NA)))))
+crimedata$Season <- as.factor(crimedata$Season)
 
-## Column - Incident Number w/year has both incident number and year. Remove year
-crimedata <- crimedata %>% mutate(`Incident Number` = sub("-.*", "", `Incident Number w/year`))
-
-## Now drop the column "Incident Number w/year"
-crimedata <- crimedata %>% select(-`Incident Number w/year`)
+## Columns - Victim Gender, Victim Condition,Offense Status should of type Factor
+crimedata$`Victim Gender` <- as.factor(crimedata$`Victim Gender`)
+crimedata$`Victim Condition` <- as.factor(crimedata$`Victim Condition`)
+crimedata$`Offense Status` <- as.factor(crimedata$`Offense Status`)
 
 ## Extract the hour of the day when the crime took place.
 crimedata <- crimedata %>% mutate(`Hour of the Day` = sub(":.*", "",`Time1 of Occurrence`))
-
-## Handle the missing values for the column Type of Property
-crimedata$`Type of Property`[which(crimedata$`Type of Property` == "")] = NA
+crimedata$`Hour of the Day` <- as.integer(crimedata$`Hour of the Day`)
 
 ## Type of Property cannot have numeric values
+crimedata$`Type of Property` <- as.factor(crimedata$`Type of Property`)
 crimedata$`Type of Property` <- droplevels(crimedata$`Type of Property`, exclude = c(910,920,932,510))
+crimedata$`Type of Property`[crimedata$`Type of Property` %in% c("N/A", "") ] = NA
+
+## `UCR Offense Name` for the year 2019 crime incidents are empty. `UCR Offense Name` should be derived from `Type of Incident`
+temp <- crimedata[!duplicated(crimedata$`Type of Incident`), ]
+offenseNames <- temp %>% dplyr::select(`Type of Incident`, `UCR Offense Name`)
+
+offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "ARSON"))] <- "ARSON"
+offenseNames$`UCR Offense Name`[which(grepl(paste(c("^GRAFFITI", "^CRUELTY TO", "^CRIM MISCHIEF"), collapse="|"),offenseNames$`Type of Incident` ))] <- "VANDALISM & CRIM MISCHIEF"
+offenseNames$`UCR Offense Name`[which(grepl(paste(c("^ASSAULT", "^DEADLY CONDUCT"), collapse="|"),offenseNames$`Type of Incident` ))] <- "ASSAULT"
+offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "BMV"))] <- "THEFT/BMV"
+offenseNames$`UCR Offense Name`[which(grepl(paste(c("^CREDIT CARD", "^COMPUTER SECURITY", "^DECEPTIVE", "^FRAUD", "^THEFT OF SERVICE", "^FALSE STATEMENT", "^TAMPER W" , "^SECURE EXE", "^FAIL TO", "FALSE ALARM"), collapse="|"),offenseNames$`Type of Incident` ))] <- "FRAUD"
+offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "CRIMINAL TRESPASS"))] <- "CRIMINAL TRESPASS"
+offenseNames$`UCR Offense Name`[which(grepl(paste(c("^DELIVERY", "^MAN DEL", "^POSS CONT", "^POSS MARIJUANA"), collapse="|"),offenseNames$`Type of Incident` ))] <- "NARCOTICS & DRUG"
+offenseNames$`UCR Offense Name`[which(grepl(paste(c("^DISORDERLY", "^DISRUPT", "^ILLUMINA", "^ONLINE IMPRESS", "^STALKING", "^SEX OFFENDERS", "^HARASSMENT"), collapse="|"),offenseNames$`Type of Incident` ))] <- "DISORDERLY CONDUCT"
+offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "DWI"))] <- "DWI"
+offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "ESCAPE"))] <- "ESCAPE"
+offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "EVADING"))] <- "EVADING"
+offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "FORGERY"))] <- "FORGE & COUNTERFEIT"
+offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "KIDNAPPING"))] <- "KIDNAPPING"
+offenseNames$`UCR Offense Name`[which(grepl(paste(c("^ILLEGAL", "^INTERFERE", "^INTERFER", "^FLEEING", "^MISAPP", "^OTHER OFFENSES", "^WARRANT"), collapse="|"),offenseNames$`Type of Incident` ))] <- "OTHERS"
+offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "TRAFFICKING"))] <- "HUMAN TRAFFICKING"
+offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "UNAUTHORIZED USE OF"))] <- "UUMV"
+offenseNames$`UCR Offense Name`[which(grepl(paste(c("^UNLAWFULLY", "^UNLAWFUL", "^PROHIBITED"), collapse="|"),offenseNames$`Type of Incident` ))] <- "WEAPONS"
+offenseNames$`UCR Offense Name`[which(grepl(paste(c("^VIO BOND", "^VIO PROTECT"), collapse="|"),offenseNames$`Type of Incident` ))] <- "OFFENSE AGAINST CHILD"
+offenseNames$`UCR Offense Name`[which(grepl(paste(c("^TRAFFIC VIO", "^TRAF VIO"), collapse="|"),offenseNames$`Type of Incident` ))] <- "TRAFFIC VIOLATION"
+offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "TRADEMARK"))] <- "FORGE & COUNTERFEIT"
+offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "THEFT ORG"))] <- "THEFT ORG RETAIL"
+offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "TERRORISTIC THREAT"))] <- "TERRORISTIC THREAT"
+offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "RESIST ARREST"))] <- "RESIST ARREST"
+offenseNames$`UCR Offense Name`[which(grepl(paste(c("^MURDER", "^MANSLAUGHTER"), collapse="|"),offenseNames$`Type of Incident` ))] <- "MURDER"
+offenseNames$`UCR Offense Name`[which(grepl(paste(c("^PUBLIC INTOX", "^PURCHASE FURN"), collapse="|"),offenseNames$`Type of Incident` ))] <- "DRUNK & DISORDERLY"
+offenseNames$`UCR Offense Name`[which(grepl(paste(c("^ROBBERY *OF BUSINESS"), collapse="|"),offenseNames$`Type of Incident` ))] <- "ROBBERY-BUSINESS"
+offenseNames$`UCR Offense Name`[which(grepl(paste(c("^ROBBERY *OF INDIVIDUAL"), collapse="|"),offenseNames$`Type of Incident` ))] <- "ROBBERY-INDIVIDUAL"
+offenseNames$`UCR Offense Name` <- with(offenseNames, ifelse(`UCR Offense Name` == "" & grepl("^THEFT", `Type of Incident`), "OTHER THEFTs" , `UCR Offense Name` ))
+offenseNames$`UCR Offense Name`[which(offenseNames$`UCR Offense Name` == "")] <- "OTHERS"
+
+crimedata$`UCR Offense Name` <- offenseNames[match(crimedata$`Type of Incident`, offenseNames$`Type of Incident`),2]
+
+## Group similar offense types
+crimedata$`Crime Type` <- crimedata$`UCR Offense Name`
+crimedata$`Crime Type`[which(crimedata$`Crime Type` %in% c("ASSAULT", "AGG ASSAULT - NFV"))] = "ASSAULT"
+crimedata$`Crime Type`[which(crimedata$`Crime Type` %in% c("BURGLARY-BUSINESS", "BURGLARY-RESIDENCE"))] = "BURGLARY"
+crimedata$`Crime Type`[which(crimedata$`Crime Type` %in% c("THEFT/BMV", "THEFT/SHOPLIFT", "OTHER THEFTS", "THEFT ORG RETAIL", "EMBEZZLEMENT"))] = "THEFT"
+crimedata$`Crime Type`[which(crimedata$`Crime Type` %in% c("ROBBERY-BUSINESS", "ROBBERY-INDIVIDUAL"))] = "ROBBERY"
+crimedata$`Crime Type`[which(crimedata$`Crime Type` %in% c("ACCIDENT MV", "MOTOR VEHICLE ACCIDENT"))] = "ACCIDENT"
+crimedata$`Crime Type`[which(crimedata$`Crime Type` %in% c("NARCOTICS & DRUGS", "NARCOTICS & DRUG","DRUNK & DISORDERLY", "DWI", "LIQUOR OFFENSE", "INTOXICATION MANSLAUGHTER"))] = "DRUGS"
+crimedata$`Crime Type`[which(crimedata$`Crime Type` %in% c("TRAFFIC VIOLATION", "TRAFFIC FATALITY"))] = "TRAFFIC"
+crimedata$`Crime Type`[which(crimedata$`Crime Type` %in% c("MURDER", "SUDDEN DEATH&FOUND BODIES", "VANDALISM & CRIM MISCHIEF", "WEAPONS", "ARSON", "TERRORISTIC THREAT", "KIDNAPPING", "HUMAN TRAFFICKING", "OFFENSE AGAINST CHILD", "ORANIZED CRIME"))] = "VIOLENCE"
+crimedata$`Crime Type`[which(crimedata$`Crime Type` %in% c("DISORDERLY CONDUCT" ,"CRIMINAL TRESPASS", "EVADING", "RESIST ARREST", "FAIL TO ID", "GAMBLING", "ESCAPE", "FRAUD", "UUMV", "FORGE & COUNTERFEIT"))] = "NONVIOLENCE"
+crimedata$`Crime Type`[which(crimedata$`Crime Type` %in% c("NOT CODED", "LOST", "ANIMAL BITE", "OTHERS", "FOUND", "INJURED FIREARM", "INJURED HOME", "INJURED OCCUPA", "INJURED PUBLIC"))] = "OTHERS"
+crimedata$`Crime Type` <- as.factor(crimedata$`Crime Type`)
+
+## Group similar weapon types
+crimedata$`Weapon Type` <- ""
+crimedata$`Weapon Type`[which(grepl("gun",crimedata$`Weapon Used`, ignore.case = TRUE))] <- "Gun"
+crimedata$`Weapon Type`[which(crimedata$`Weapon Used` %in% c("Rifle", "Missile/Rock"))] = "Gun"
+crimedata$`Weapon Type`[which(crimedata$`Weapon Used` %in% c("Hands-Feet"))] = "Hands/Feet"
+crimedata$`Weapon Type`[which(crimedata$`Weapon Used` %in% c("Vehicle", "MOTOR VEHICLE"))] = "Vehicle"
+crimedata$`Weapon Type`[which(crimedata$`Weapon Used` %in% c("None"))] = "No Weapons"
+crimedata$`Weapon Type`[which(crimedata$`Weapon Used` %in% c("Threats"))] = "Threat"
+crimedata$`Weapon Type`[which(grepl("knife",crimedata$`Weapon Used`, ignore.case = TRUE))] = "Knife"
+crimedata$`Weapon Type`[which(crimedata$`Weapon Used` %in% c("Other Cutting Stabbing Inst.", "SWITCHBLADE", "AXE", "ICE PICK"))] = "Knife"
+crimedata$`Weapon Type`[which(grepl("fire",crimedata$`Weapon Used`, ignore.case = TRUE))] = "Fire"
+crimedata$`Weapon Type`[which(crimedata$`Weapon Used` %in% c("Explosives", "Gas/Carbon Monoxide", "Burn/Scald"))] = "Knife"
+crimedata$`Weapon Type`[which(grepl("drugs",crimedata$`Weapon Used`, ignore.case = TRUE))] = "Drugs"
+crimedata$`Weapon Type`[which(crimedata$`Weapon Used` %in% c("ANY WEAPON OF FORCE DEADLY DISEASE, ETC", "Omission/Neglect"))] = "Drugs"
+crimedata$`Weapon Type`[which(crimedata$`Weapon Used` %in% c("Other", "Blunt", "Stangulation", "Assault", "Crowbar", "Asphixation", "BlackJack/Club", "Omission"))] <- "Others"
+crimedata$`Weapon Type`[which(crimedata$`Weapon Type` == "")] <- "Others"
+crimedata$`Weapon Type` <- as.factor(crimedata$`Weapon Type`)
 
 ## Write the cleaned dataset to a file.
 write.csv(crimedata, output_file, row.names = FALSE)
