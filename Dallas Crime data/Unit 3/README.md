@@ -1,558 +1,344 @@
 **Data Wrangling on Dallas Crime data**
 =======================================
 
-### Load the data into a dataframe - crimedata
+We use the read.delim() function to read the crime data and store it in
+a dataframe. We can either read the data directly from the URL or
+download and read it from the file. Here, we are using the second
+approach to read the data in R.
 
-### Let's have a look at the structure of the dataset
+We use the read.delim() function to read the crime data and store it in
+a dataframe. We can either read the data directly from the URL or
+download and read it from the file. Here, we are using the second
+approach to read the data in R.
 
-    summary(crimedata)
-    ##  Incident Number w/year Year of Incident      Service Number ID 
-    ##  216100-2017:   139     Min.   :2005     000001-2019-01:     1  
-    ##  107406-2019:    24     1st Qu.:2015     000002-2015-01:     1  
-    ##  073944-2016:    23     Median :2017     000002-2018-01:     1  
-    ##  246967-2018:    18     Mean   :2017     000002-2019-01:     1  
-    ##  080577-2019:    17     3rd Qu.:2018     000003-2017-01:     1  
-    ##  018178-2019:    16     Max.   :2109     000003-2017-02:     1  
-    ##  (Other)    :586043                      (Other)       :586274  
-    ##      Watch                        Call (911) Problem
-    ##  Min.   :1.000   58 - ROUTINE INVESTIGATION: 69581  
-    ##  1st Qu.:1.000   11V - BURG MOTOR VEH      : 60497  
-    ##  Median :2.000   6X - MAJOR DIST (VIOLENCE): 43985  
-    ##  Mean   :1.913   11R - BURG OF RES         : 33947  
-    ##  3rd Qu.:3.000   09V - UUMV                : 31054  
-    ##  Max.   :3.000   09 - THEFT                : 26358  
-    ##                  (Other)                   :320858  
-    ##                                    Type of Incident 
-    ##  BMV                                       : 63309  
-    ##  UNAUTHORIZED USE OF MOTOR VEH - AUTOMOBILE: 27994  
-    ##  BURGLARY OF HABITATION - FORCED ENTRY     : 22673  
-    ##  FOUND PROPERTY (NO OFFENSE)               : 21076  
-    ##  PUBLIC INTOXICATION                       : 18564  
-    ##  CRIM MISCHIEF >OR EQUAL $100 BUT <$750    : 16830  
-    ##  (Other)                                   :415834  
-    ##                             Type  Location  
-    ##  Highway, Street, Alley ETC        :111262  
-    ##  Single Family Residence - Occupied: 70380  
-    ##  Apartment Parking Lot             : 51114  
-    ##  Parking Lot (All Others)          : 47110  
-    ##  Outdoor Area Public/Private       : 38288  
-    ##  Apartment Complex/Building        : 35454  
-    ##  (Other)                           :232672  
-    ##                              Type of Property 
-    ##  N/A                                 :444555  
-    ##  Motor Vehicle                       : 27346  
-    ##  Other                               : 19416  
-    ##  Residential Property Occupied/Vacant: 17761  
-    ##  Apartment Complex/Building          : 17686  
-    ##  Parking Lot                         : 14453  
-    ##  (Other)                             : 45063  
-    ##                Incident Address  Apartment Number Reporting Area
-    ##                        :  3456          :468057   Min.   :1001  
-    ##  1400 S LAMAR ST       :  2618   100    :  1366   1st Qu.:1248  
-    ##  1600 CHESTNUT ST      :  1697   A      :  1229   Median :3058  
-    ##  8687 N CENTRAL EXPY   :  1496   101    :  1181   Mean   :3134  
-    ##  8008 HERB KELLEHER WAY:  1131   102    :  1024   3rd Qu.:4317  
-    ##  9301 FOREST LN        :   936   103    :   933   Max.   :9611  
-    ##  (Other)               :574946   (Other):112490   NA's   :715   
-    ##       Beat                Division         Sector      Council District
-    ##  Min.   :  3.0   NORTHEAST    :97289   Min.   :  0.0   D2     : 66433  
-    ##  1st Qu.:237.0   SOUTHEAST    :92362   1st Qu.:230.0   D6     : 60814  
-    ##  Median :416.0   CENTRAL      :88025   Median :410.0   D7     : 60576  
-    ##  Mean   :414.2   SOUTHWEST    :87249   Mean   :410.2   D14    : 53776  
-    ##  3rd Qu.:552.0   NORTHWEST    :83901   3rd Qu.:550.0   D8     : 51105  
-    ##  Max.   :757.0   SOUTH CENTRAL:78327   Max.   :750.0   D4     : 45987  
-    ##  NA's   :213     (Other)      :59127   NA's   :128     (Other):247589  
-    ##           Target Area Action Grids
-    ##                       :368249     
-    ##  WebbChapel Timberline: 12387     
-    ##  Five Points          : 12326     
-    ##  Ross Bennett         : 11838     
-    ##  Forest Audelia       : 10733     
-    ##  Monument GoodLatimer : 10371     
-    ##  (Other)              :160376     
-    ##                                 Community      Date1 of Occurrence
-    ##                                      :478293   08/03/2018:   624  
-    ##  Northwest_PFA                       :  7764   09/01/2018:   623  
-    ##  Northwest_PFA, Bachman Lake_PFA     :  7452   07/13/2018:   617  
-    ##  FivePoints_PFA, Vickery Meadows_PFA :  7303   08/04/2018:   575  
-    ##  Chaucer_PFA                         :  6766   07/02/2018:   573  
-    ##  Garrett Park PFA, BryanHenderson_PFA:  5868   07/06/2018:   572  
-    ##  (Other)                             : 72834   (Other)   :582696  
-    ##  Year1 of Occurrence Month1 of Occurence Day1 of the Week
-    ##  Min.   :1974        July     : 64858    Fri    :89608   
-    ##  1st Qu.:2015        June     : 57497    Sat    :87054   
-    ##  Median :2017        August   : 53735    Sun    :83392   
-    ##  Mean   :2017        May      : 49422    Mon    :83120   
-    ##  3rd Qu.:2018        October  : 47271    Thu    :82186   
-    ##  Max.   :2019        September: 46584    Wed    :80548   
-    ##  NA's   :2           (Other)  :266913    (Other):80372   
-    ##  Time1 of Occurrence Day1 of the Year Date2 of Occurrence
-    ##  00:00  : 20357      Min.   :  1.0    07/13/2018:   612  
-    ##  22:00  : 15692      1st Qu.:101.0    08/03/2018:   612  
-    ##  18:00  : 15483      Median :186.0    07/02/2018:   582  
-    ##  20:00  : 13982      Mean   :184.2    08/24/2018:   566  
-    ##  17:00  : 13811      3rd Qu.:268.0    09/01/2018:   559  
-    ##  12:00  : 13438      Max.   :366.0    08/05/2018:   558  
-    ##  (Other):493517      NA's   :2        (Other)   :582791  
-    ##  Year2 of Occurrence Month2 of Occurence Day2 of the Week
-    ##  Min.   :1984        July     : 65121    Mon    :88036   
-    ##  1st Qu.:2015        June     : 57453    Fri    :85688   
-    ##  Median :2017        August   : 54007    Sat    :83984   
-    ##  Mean   :2017        May      : 49115    Sun    :83642   
-    ##  3rd Qu.:2018        October  : 47282    Thu    :82122   
-    ##  Max.   :2019        September: 46541    Tue    :81647   
-    ##  NA's   :2           (Other)  :266761    (Other):81161   
-    ##  Time2 of Occurrence Day2 of the Year                Date of Report  
-    ##  08:00  : 15253      Min.   :  1.0    09/21/2017 03:38:00 AM:   139  
-    ##  07:00  : 12254      1st Qu.:101.0    05/29/2019 12:31:00 PM:    26  
-    ##  00:00  : 11554      Median :186.0    09/14/2018 09:41:00 AM:    26  
-    ##  09:00  : 11291      Mean   :184.2    07/29/2019 09:00:00 AM:    25  
-    ##  10:00  : 10716      3rd Qu.:267.0    03/28/2016 06:05:00 AM:    23  
-    ##  12:00  :  9685      Max.   :366.0    10/22/2017 10:01:00 PM:    23  
-    ##  (Other):515527      NA's   :2        (Other)               :586018  
-    ##             Date incident created Offense Entered Year
-    ##  09/21/2017 02:26:02 AM:   139    Min.   :2014        
-    ##  05/29/2019 01:47:11 PM:    24    1st Qu.:2015        
-    ##  03/28/2016 06:39:48 PM:    23    Median :2017        
-    ##  07/11/2019 04:36:44 PM:    19    Mean   :2017        
-    ##  11/14/2018 05:24:09 PM:    18    3rd Qu.:2018        
-    ##  01/27/2019 04:29:46 PM:    17    Max.   :2019        
-    ##  (Other)               :586040                        
-    ##  Offense Entered Month Offense Entered Day of the Week
-    ##  July     : 65287      Fri:86048                      
-    ##  June     : 57582      Mon:91412                      
-    ##  August   : 54311      Sat:79640                      
-    ##  May      : 48642      Sun:78255                      
-    ##  October  : 47263      Thu:83550                      
-    ##  September: 46614      Tue:83902                      
-    ##  (Other)  :266581      Wed:83473                      
-    ##  Offense Entered Time Offense Entered  Date/Time      CFS Number    
-    ##  16:55  :   810       Min.   :  1                          :  3113  
-    ##  16:58  :   804       1st Qu.:100                17-1798291:   139  
-    ##  16:59  :   795       Median :186                15-2011150:    51  
-    ##  16:49  :   787       Mean   :184                17-2012378:    45  
-    ##  16:54  :   774       3rd Qu.:267                15-1958964:    40  
-    ##  17:01  :   774       Max.   :366                17-2002855:    39  
-    ##  (Other):581536                                  (Other)   :582853  
-    ##            Call Received Date Time                Call Date Time  
-    ##                        :  3113                           :  3113  
-    ##  09/21/2017 02:25:13 AM:   139     09/21/2017 02:25:13 AM:   139  
-    ##  10/03/2015 12:40:30 PM:    51     10/03/2015 12:40:30 PM:    51  
-    ##  10/22/2017 03:12:36 PM:    45     10/22/2017 03:12:36 PM:    45  
-    ##  09/26/2015 06:05:17 AM:    40     09/26/2015 06:05:17 AM:    40  
-    ##  10/21/2017 07:33:41 AM:    39     10/21/2017 07:33:41 AM:    39  
-    ##  (Other)               :582853     (Other)               :582853  
-    ##             Call Cleared Date Time           Call Dispatch Date Time
-    ##                        :  3484                           :  3168    
-    ##  09/21/2017 08:47:02 PM:   139     09/21/2017 02:25:14 AM:   139    
-    ##  10/06/2015 11:40:38 AM:    51     10/03/2015 12:40:30 PM:    51    
-    ##  10/22/2017 03:17:18 PM:    45     10/22/2017 03:12:53 PM:    45    
-    ##  09/29/2015 08:03:24 AM:    40     09/26/2015 06:05:18 AM:    40    
-    ##  10/21/2017 07:57:13 AM:    39     10/21/2017 07:33:59 AM:    39    
-    ##  (Other)               :582482     (Other)               :582798    
-    ##                    Special Report (Pre-RMS)        Person Involvement Type
-    ##                                :583048      Victim             :541085    
-    ##  State Fair (Inside Fair)      :  1199                         : 21060    
-    ##  RMS-System Dark               :   871      Registered Owner   : 20743    
-    ##  State Fair                    :   339      Owner              :  2383    
-    ##  Alan Ross Texas Freedom Parade:   322      Stln Vehicle (UUMV):   610    
-    ##  Fireworks At River Bottoms    :   161      Driver             :   320    
-    ##  (Other)                       :   340      (Other)            :    79    
-    ##                Victim Type             Victim Name    
-    ##  Individual          :349919   CITY OF DALLAS:101340  
-    ##  Government          : 85823                 : 24523  
-    ##  Business            : 85534   WALMART       :  1003  
-    ##  Society/Public      : 34432   7-11          :   979  
-    ##                      : 29320   ONCOR         :   768  
-    ##  Religious Organizati:   485   (Other)       :457666  
-    ##  (Other)             :   767   NA's          :     1  
-    ##              Victim Race                   Victim Ethnicity 
-    ##                    :230987                         :227437  
-    ##  Black             :120312   Hispanic or Latino    :112821  
-    ##  Hispanic or Latino:112828   Non-Hispanic or Latino:245339  
-    ##  White             :107337   Unknown               :   683  
-    ##  Asian             :  5880                                  
-    ##  Middle Eastern    :  4950                                  
-    ##  (Other)           :  3986                                  
-    ##  Victim Gender      Victim Age     Victim Age at Offense
-    ##         :230812   Min.   : -9.00   Min.   :  0.0        
-    ##  Female :160870   1st Qu.: 28.00   1st Qu.: 27.0        
-    ##  Male   :193216   Median : 37.00   Median : 37.0        
-    ##  N      :     1   Mean   : 39.91   Mean   : 39.7        
-    ##  TEST   :    11   3rd Qu.: 50.00   3rd Qu.: 50.0        
-    ##  Unknown:  1370   Max.   :934.00   Max.   :934.0        
-    ##                   NA's   :249099   NA's   :254542       
-    ##             Victim Home Address Victim Apartment Victim Zip Code 
-    ##                       : 36382          :434438          : 43628  
-    ##  725 N JIM MILLER RD  : 13528   101    :  1349   75217  : 37018  
-    ##  9915 E NORTHWEST HWY : 10815   A      :  1324   75211  : 25321  
-    ##  334 S HALL ST        : 10418   102    :  1228   75220  : 24926  
-    ##  1999 E CAMP WISDOM RD: 10027   B      :  1145   75241  : 20470  
-    ##  9801 HARRY HINES BLVD:  9643   103    :  1129   75216  : 20246  
-    ##  (Other)              :495467   (Other):145667   (Other):414671  
-    ##    Victim City      Victim State        Victim Business Name
-    ##  DALLAS  :459322   TX     :533835                 :562547   
-    ##          : 37037          : 41860   SELF          :   807   
-    ##  GARLAND :  6064   OK     :  1375   UNEMPLOYED    :   711   
-    ##  MESQUITE:  5465   LA     :   863   CITY OF DALLAS:   606   
-    ##  IRVING  :  5249   CA     :   843   SELF EMPLOYED :   535   
-    ##  PLANO   :  3611   AR     :   669   (Other)       : 21068   
-    ##  (Other) : 69532   (Other):  6835   NA's          :     6   
-    ##            Victim Business Address Victim Business Phone
-    ##                        :570508               :578154    
-    ##  9915 E NORTHWEST HWY  :    73     2146704415:    54    
-    ##  1400 S LAMAR ST       :    70     2146708345:    43    
-    ##  1500 MARILLA ST       :    66     2146704413:    38    
-    ##  8008 HERB KELLEHER WAY:    60     2146707470:    35    
-    ##  (Other)               : 15502     2146714500:    28    
-    ##  NA's                  :     1     (Other)   :  7928    
-    ##  Responding Officer #1  Badge No               Responding Officer #1  Name
-    ##  94392  :  7968                  WILLIS,LINDA,M              :  7968      
-    ##  118918 :  4599                                              :  4876      
-    ##         :  4054                  SPURR,RUTH                  :  4599      
-    ##  106291 :  3669                  BELAYE,DIANE,KAY            :  3669      
-    ##  120365 :  3467                  BURNETT,MICHELLE,J          :  3467      
-    ##  6751   :  1509                  CAMPOPIANO III,PAUL,PASQUELE:  1509      
-    ##  (Other):561014                  (Other)                     :560192      
-    ##  Responding Officer #2 Badge No        Responding Officer #2  Name
-    ##         :364750                                      :364751      
-    ##  6700   :   656                 FRANCIS JR,GEORGE    :   656      
-    ##  7270   :   606                 LEAL,JAIME           :   606      
-    ##  10226  :   598                 MYTYCH,CLAYTON,ROSS  :   598      
-    ##  6614   :   579                 WILKERSON,ROBERT,C   :   579      
-    ##  9738   :   575                 CAMPBELL,DANIEL,DAVID:   575      
-    ##  (Other):218516                 (Other)              :218515      
-    ##  Reporting Officer Badge No Assisting Officer Badge No
-    ##  94392  :  7977                    :162858            
-    ##  118918 :  4608             5799   : 11425            
-    ##  106291 :  3675             T168   : 10333            
-    ##  120365 :  3472             T187   :  8295            
-    ##         :  2647             T259   :  7538            
-    ##  6751   :  1511             T270   :  6664            
-    ##  (Other):562390             (Other):379167            
-    ##  Reviewing Officer Badge No Element Number Assigned
-    ##  81075  : 41142             EX07   :  7660         
-    ##  15356  : 32589             OFFDTY :  6825         
-    ##  105273 : 27351             EX06   :  4671         
-    ##  111210 : 26991                    :  3644         
-    ##  057074 : 25323             EX01   :  3326         
-    ##  70495  : 25277             EX04   :  3288         
-    ##  (Other):407607             (Other):556866         
-    ##             Investigating Unit 1
-    ##                       :172793   
-    ##  Investigations       :373935   
-    ##  Patrol               :  3401   
-    ##  Strategic Development: 29250   
-    ##  Support              :  6901   
-    ##                                 
-    ##                                 
-    ##                                    Investigating Unit 2
-    ##                                              :172768   
-    ##  Special Investigations / Auto Theft         : 69622   
-    ##  Property Crime Division / NE Property Crimes: 48299   
-    ##  Property Crime Division / NW Property Crimes: 38035   
-    ##  Property Crime Division / SW Property Crimes: 35764   
-    ##  Property Crime Division / SC Property Crimes: 30468   
-    ##  (Other)                                     :191324   
-    ##                      Offense Status             UCR Disposition  
-    ##  Suspended                  :452759   Suspended         :452793  
-    ##  Clear by Arrest            : 88507   CBA (Over Age 17) : 82535  
-    ##  Clear by Exceptional Arrest: 16562   CBEA (Over Age 17): 16068  
-    ##  Open                       : 11073   Open              : 10986  
-    ##                             : 10713                     : 10645  
-    ##  Closed/Cleared             :  6637   Closed            :  6603  
-    ##  (Other)                    :    29   (Other)           :  6650  
-    ##  Victim Injury Description Victim Condition 
-    ##          :556594                   :563693  
-    ##  DECEASED:   450           Critical:   319  
-    ##  PAIN    :   331           Deceased:  2921  
-    ##  N       :   329           Good    : 13935  
-    ##  NONE    :   226           N/A     :     1  
-    ##  (Other) : 28348           Serious :   615  
-    ##  NA's    :     2           Stable  :  4796  
-    ##                 Modus Operandi (MO) Family Offense Hate Crime  
-    ##                           : 24771        :  2004      :585606  
-    ##  FOUND PROPERTY           :  9834   false:584276   No :   511  
-    ##  PUBLIC INTOXICATION      :  3591                  Yes:   163  
-    ##  INJURED PERSON           :  3104                              
-    ##  CRIMINAL TRESPASS WARNING:  2847                              
-    ##  (Other)                  :541944                              
-    ##  NA's                     :   189                              
-    ##                          Hate Crime Description     Weapon Used    
-    ##  None                               :561517     Other     :247058  
-    ##  Unknown                            : 23488               :197060  
-    ##                                     :   852     None      : 53858  
-    ##  Anti White                         :   108     Hands-Feet: 32691  
-    ##  Anti Black Or African American     :    63     Handgun   : 27955  
-    ##  Anti Homosexual (Gays and Lesbians):    51     Vehicle   :  5181  
-    ##  (Other)                            :   201     (Other)   : 22477  
-    ##  Gang Related Offense Victim Package Drug Related Istevencident
-    ##     :193846           Mode:logical          :  2060            
-    ##  G  :   408           NA's:586280    2      :     1            
-    ##  J  :    54                          3      :     2            
-    ##  No :331810                          No     :500451            
-    ##  UNK: 58582                          UNK    : 64025            
-    ##  Yes:  1580                          Unknown:    12            
-    ##                                      Yes    : 19729            
-    ##             RMS Code      Criminal Justice Information Service Code
-    ##  MA-22990004-F1 : 63309   Min.   : 9990017                         
-    ##  FS-24110003-G1 : 27994   1st Qu.:22990004                         
-    ##  F2-22990002-E5 : 22673   Median :29990002                         
-    ##  NA-99999999-X3 : 21076   Mean   :50969864                         
-    ##  MB-29990016-L82: 16830   3rd Qu.:99999999                         
-    ##  FS-22990001-E1 : 16225   Max.   :99999999                         
-    ##  (Other)        :418173                                            
-    ##           Penal Code                      UCR Offense Name 
-    ##  PC 30.04(a)   : 67923                            :177068  
-    ##  No Offense    : 60237   THEFT/BMV                : 63907  
-    ##  PC 31.07      : 42330   VANDALISM & CRIM MISCHIEF: 55605  
-    ##  PC 28.03(b)(2): 34390   FOUND                    : 37877  
-    ##  PC 30.02(c)(2): 34260   OTHER THEFTS             : 32483  
-    ##  PC 30.02(c)(1): 20115   UUMV                     : 30893  
-    ##  (Other)       :327025   (Other)                  :188447  
-    ##                 UCR Offense Description    UCR Code     
-    ##                             :177068     Min.   : 110    
-    ##  THEFT                      :105614     1st Qu.: 630    
-    ##  CRIMINAL MISCHIEF/VANDALISM: 55605     Median : 710    
-    ##  BURGLARY                   : 44491     Mean   :1420    
-    ##  FOUND PROPERTY             : 37877     3rd Qu.:2100    
-    ##  AUTO THEFT - UUMV          : 30893     Max.   :5700    
-    ##  (Other)                    :134732     NA's   :177068  
-    ##     Offense Type                                        NIBRS Crime    
-    ##           :177068                                             :259103  
-    ##  NOT CODED: 63634   MISCELLANEOUS                             : 83310  
-    ##  PART1    :200909   THEFT FROM MOTOR VEHICLE                  : 31027  
-    ##  PART2    :144669   DESTRUCTION/ DAMAGE/ VANDALISM OF PROPERTY: 27733  
-    ##                     UUMV                                      : 23736  
-    ##                     ALL OTHER LARCENY                         : 20763  
-    ##                     (Other)                                   :140608  
-    ##                                  NIBRS Crime Category
-    ##                                            :259103   
-    ##  MISCELLANEOUS                             : 83310   
-    ##  LARCENY/ THEFT OFFENSES                   : 67886   
-    ##  DESTRUCTION/ DAMAGE/ VANDALISM OF PROPERTY: 27733   
-    ##  ASSAULT OFFENSES                          : 26474   
-    ##  BURGLARY/ BREAKING & ENTERING             : 24857   
-    ##  (Other)                                   : 96917   
-    ##                        NIBRS Crime Against   NIBRS Code     NIBRS Group
-    ##                                  :259103          :259103    :259103   
-    ##  C - PERSON, PROPERTY, OR SOCIETY:  9503   999    : 92813   A:202355   
-    ##  MISCELLANEOUS                   : 83310   23F    : 31027   B: 32009   
-    ##  PERSON                          : 26869   290    : 27733   C: 19849   
-    ##  PERSON, PROPERTY, OR SOCIETY    : 11054   220    : 24857   D: 72964   
-    ##  PROPERTY                        :164733   240    : 23736              
-    ##  SOCIETY                         : 31708   (Other):127011              
-    ##      NIBRS Type                          Update Date      X Coordinate    
-    ##           :259103   2017-09-21 18:11:03.0000000:   139   Min.   :2415424  
-    ##  Coded    :193763   2019-07-21 10:51:51.0000000:    24   1st Qu.:2478578  
-    ##  No Coded : 60450   2016-03-30 09:51:18.0000000:    23   Median :2493689  
-    ##  Not Coded: 72964   2018-12-12 08:52:14.0000000:    18   Mean   :2494751  
-    ##                     2019-04-30 08:00:34.0000000:    17   3rd Qu.:2507320  
-    ##                     2017-03-10 10:09:53.0000000:    16   Max.   :2590096  
-    ##                     (Other)                    :586043   NA's   :3835     
-    ##   Y Cordinate         Zip Code           City            State       
-    ##  Min.   :6901369   Min.   :    0   DALLAS  :576137   TX     :580456  
-    ##  1st Qu.:6954801   1st Qu.:75214           :  5305          :  5453  
-    ##  Median :6974741   Median :75224   Dallas  :  3683   T      :   218  
-    ##  Mean   :6977629   Mean   :75224   GARLAND :   137   TN     :    77  
-    ##  3rd Qu.:7001175   3rd Qu.:75235   MESQUITE:    98   UT     :    30  
-    ##  Max.   :7087257   Max.   :97224   ROWLETT :    76   DE     :    12  
-    ##  NA's   :3835      NA's   :3714    (Other) :   844   (Other):    34  
-    ##                                                            Location1     
-    ##                                                                 :  3456  
-    ##  1400 S LAMAR ST\nDALLAS, TX 75215\n(32.767362, -96.795092)     :  2612  
-    ##  1600 CHESTNUT ST\nDALLAS, TX 75226\n(32.780825, -96.777351)    :  1632  
-    ##  8687 N CENTRAL EXPY\nDALLAS, TX 75225\n(32.86875, -96.770691)  :  1471  
-    ##  8008 HERB KELLEHER WAY\nDALLAS, TX 75235\n(32.85262, -96.85281):  1106  
-    ##  9301 FOREST LN\nDALLAS, TX 75243\n(32.909205, -96.740013)      :   928  
-    ##  (Other)                                                        :575075
+    library(dplyr)
+    library(tidyr)
+    library(lubridate)
+    library(kableExtra)
 
-It is clear from the structure of the data, that there are 586280
-observations (rows) of 100 variables(columns).
+    crimedata <- read.delim(input_file, header = TRUE,sep = "\t", check.names = FALSE, stringsAsFactors = FALSE)
 
-    colnames(crimedata)
-    ##   [1] "Incident Number w/year"                   
-    ##   [2] "Year of Incident"                         
-    ##   [3] "Service Number ID"                        
-    ##   [4] "Watch"                                    
-    ##   [5] "Call (911) Problem"                       
-    ##   [6] "Type of Incident"                         
-    ##   [7] "Type  Location"                           
-    ##   [8] "Type of Property"                         
-    ##   [9] "Incident Address"                         
-    ##  [10] "Apartment Number"                         
-    ##  [11] "Reporting Area"                           
-    ##  [12] "Beat"                                     
-    ##  [13] "Division"                                 
-    ##  [14] "Sector"                                   
-    ##  [15] "Council District"                         
-    ##  [16] "Target Area Action Grids"                 
-    ##  [17] "Community"                                
-    ##  [18] "Date1 of Occurrence"                      
-    ##  [19] "Year1 of Occurrence"                      
-    ##  [20] "Month1 of Occurence"                      
-    ##  [21] "Day1 of the Week"                         
-    ##  [22] "Time1 of Occurrence"                      
-    ##  [23] "Day1 of the Year"                         
-    ##  [24] "Date2 of Occurrence"                      
-    ##  [25] "Year2 of Occurrence"                      
-    ##  [26] "Month2 of Occurence"                      
-    ##  [27] "Day2 of the Week"                         
-    ##  [28] "Time2 of Occurrence"                      
-    ##  [29] "Day2 of the Year"                         
-    ##  [30] "Date of Report"                           
-    ##  [31] "Date incident created"                    
-    ##  [32] "Offense Entered Year"                     
-    ##  [33] "Offense Entered Month"                    
-    ##  [34] "Offense Entered Day of the Week"          
-    ##  [35] "Offense Entered Time"                     
-    ##  [36] "Offense Entered  Date/Time"               
-    ##  [37] "CFS Number"                               
-    ##  [38] "Call Received Date Time"                  
-    ##  [39] "Call Date Time"                           
-    ##  [40] "Call Cleared Date Time"                   
-    ##  [41] "Call Dispatch Date Time"                  
-    ##  [42] "Special Report (Pre-RMS)"                 
-    ##  [43] "Person Involvement Type"                  
-    ##  [44] "Victim Type"                              
-    ##  [45] "Victim Name"                              
-    ##  [46] "Victim Race"                              
-    ##  [47] "Victim Ethnicity"                         
-    ##  [48] "Victim Gender"                            
-    ##  [49] "Victim Age"                               
-    ##  [50] "Victim Age at Offense"                    
-    ##  [51] "Victim Home Address"                      
-    ##  [52] "Victim Apartment"                         
-    ##  [53] "Victim Zip Code"                          
-    ##  [54] "Victim City"                              
-    ##  [55] "Victim State"                             
-    ##  [56] "Victim Business Name"                     
-    ##  [57] "Victim Business Address"                  
-    ##  [58] "Victim Business Phone"                    
-    ##  [59] "Responding Officer #1  Badge No"          
-    ##  [60] "Responding Officer #1  Name"              
-    ##  [61] "Responding Officer #2 Badge No"           
-    ##  [62] "Responding Officer #2  Name"              
-    ##  [63] "Reporting Officer Badge No"               
-    ##  [64] "Assisting Officer Badge No"               
-    ##  [65] "Reviewing Officer Badge No"               
-    ##  [66] "Element Number Assigned"                  
-    ##  [67] "Investigating Unit 1"                     
-    ##  [68] "Investigating Unit 2"                     
-    ##  [69] "Offense Status"                           
-    ##  [70] "UCR Disposition"                          
-    ##  [71] "Victim Injury Description"                
-    ##  [72] "Victim Condition"                         
-    ##  [73] "Modus Operandi (MO)"                      
-    ##  [74] "Family Offense"                           
-    ##  [75] "Hate Crime"                               
-    ##  [76] "Hate Crime Description"                   
-    ##  [77] "Weapon Used"                              
-    ##  [78] "Gang Related Offense"                     
-    ##  [79] "Victim Package"                           
-    ##  [80] "Drug Related Istevencident"               
-    ##  [81] "RMS Code"                                 
-    ##  [82] "Criminal Justice Information Service Code"
-    ##  [83] "Penal Code"                               
-    ##  [84] "UCR Offense Name"                         
-    ##  [85] "UCR Offense Description"                  
-    ##  [86] "UCR Code"                                 
-    ##  [87] "Offense Type"                             
-    ##  [88] "NIBRS Crime"                              
-    ##  [89] "NIBRS Crime Category"                     
-    ##  [90] "NIBRS Crime Against"                      
-    ##  [91] "NIBRS Code"                               
-    ##  [92] "NIBRS Group"                              
-    ##  [93] "NIBRS Type"                               
-    ##  [94] "Update Date"                              
-    ##  [95] "X Coordinate"                             
-    ##  [96] "Y Cordinate"                              
-    ##  [97] "Zip Code"                                 
-    ##  [98] "City"                                     
-    ##  [99] "State"                                    
-    ## [100] "Location1"
+Now that we have read the data, let us understand the data, its fields
+and its types. str() function displays the structure of the data in a
+compact way.
 
-We will select only the variables that are needed for the analysis.
+    str(crimedata)
 
-### Select only the columns that are needed for the analysis
+    ## 'data.frame':    628964 obs. of  100 variables:
+    ##  $ Incident Number w/year                   : chr  "196700-2018" "248560-2018" "080509-2018" "081335-2018" ...
+    ##  $ Year of Incident                         : int  2018 2018 2018 2018 2018 2018 2018 2018 2018 2018 ...
+    ##  $ Service Number ID                        : chr  "196700-2018-01" "248560-2018-01" "080509-2018-01" "081335-2018-01" ...
+    ##  $ Watch                                    : int  1 3 2 2 3 2 3 1 3 2 ...
+    ##  $ Call (911) Problem                       : chr  "58 - ROUTINE INVESTIGATION" "41/20 - ROBBERY - IN PROGRESS" "58 - ROUTINE INVESTIGATION" "58 - ROUTINE INVESTIGATION" ...
+    ##  $ Type of Incident                         : chr  "LOST PROPERTY (NO OFFENSE)" "FOUND PROPERTY (NO OFFENSE)" "INJURED PERSON- PUBLIC PROPERTY (OTHER THAN FIREARM) (NO OFFENSE)" "LOST PROPERTY (NO OFFENSE)" ...
+    ##  $ Type  Location                           : chr  "Single Family Residence - Occupied" "Highway, Street, Alley ETC" "Airport - All Others" "Hotel/Motel/ETC" ...
+    ##  $ Type of Property                         : chr  "N/A" "N/A" "N/A" "N/A" ...
+    ##  $ Incident Address                         : chr  "133 LAGUNA DR" "933 SIX FLAS AVE" "10701 LAMBERT INTERNATIONAL BLDV." "200 MAIN ST" ...
+    ##  $ Apartment Number                         : chr  "" "" "" "" ...
+    ##  $ Reporting Area                           : int  4404 4074 NA 2123 NA 2123 4290 8811 2005 NA ...
+    ##  $ Beat                                     : int  623 424 122 111 621 111 454 436 146 229 ...
+    ##  $ Division                                 : chr  "NORTH CENTRAL" "SOUTHWEST" "CENTRAL" "CENTRAL" ...
+    ##  $ Sector                                   : int  620 420 120 110 620 110 450 430 140 220 ...
+    ##  $ Council District                         : chr  "" "" "" "9" ...
+    ##  $ Target Area Action Grids                 : chr  "" "" "" "" ...
+    ##  $ Community                                : chr  "" "" "" "" ...
+    ##  $ Date1 of Occurrence                      : chr  "09/03/2018" "11/16/2018" "04/17/2018" "04/15/2018" ...
+    ##  $ Year1 of Occurrence                      : int  2018 2018 2018 2018 2018 2018 2018 2018 2018 2018 ...
+    ##  $ Month1 of Occurence                      : chr  "September" "November" "April" "April" ...
+    ##  $ Day1 of the Week                         : chr  "Mon" "Fri" "Tue" "Sun" ...
+    ##  $ Time1 of Occurrence                      : chr  "14:00" "20:18" "09:00" "12:00" ...
+    ##  $ Day1 of the Year                         : int  246 320 107 105 61 256 110 193 152 89 ...
+    ##  $ Date2 of Occurrence                      : chr  "09/04/2018" "11/16/2018" "04/17/2018" "04/15/2018" ...
+    ##  $ Year2 of Occurrence                      : int  2018 2018 2018 2018 2018 2018 2018 2018 2018 2018 ...
+    ##  $ Month2 of Occurence                      : chr  "September" "November" "April" "April" ...
+    ##  $ Day2 of the Week                         : chr  "Tue" "Fri" "Tue" "Sun" ...
+    ##  $ Time2 of Occurrence                      : chr  "13:00" "20:18" "09:01" "12:00" ...
+    ##  $ Day2 of the Year                         : int  247 320 107 105 66 282 110 193 181 89 ...
+    ##  $ Date of Report                           : chr  "09/04/2018 06:19:00 PM" "11/16/2018 08:19:00 PM" "04/17/2018 10:15:00 AM" "04/17/2018 10:24:00 AM" ...
+    ##  $ Date incident created                    : chr  "09/04/2018 06:22:55 PM" "11/16/2018 11:44:33 PM" "04/17/2018 10:25:02 AM" "04/18/2018 10:25:12 AM" ...
+    ##  $ Offense Entered Year                     : int  2018 2018 2018 2018 2018 2018 2018 2018 2018 2018 ...
+    ##  $ Offense Entered Month                    : chr  "September" "November" "April" "April" ...
+    ##  $ Offense Entered Day of the Week          : chr  "Tue" "Fri" "Tue" "Wed" ...
+    ##  $ Offense Entered Time                     : chr  "18:22" "23:44" "10:25" "10:25" ...
+    ##  $ Offense Entered  Date/Time               : int  247 320 107 108 66 283 132 193 198 263 ...
+    ##  $ CFS Number                               : chr  "18-1617276" "18-2086439" "18-0668631" "18-0676330" ...
+    ##  $ Call Received Date Time                  : chr  "09/04/2018 06:19:05 PM" "11/16/2018 08:18:25 PM" "04/17/2018 06:00:49 AM" "04/18/2018 10:24:19 AM" ...
+    ##  $ Call Date Time                           : chr  "09/04/2018 06:19:05 PM" "11/16/2018 08:18:25 PM" "04/17/2018 06:00:49 AM" "04/18/2018 10:24:19 AM" ...
+    ##  $ Call Cleared Date Time                   : chr  "09/04/2018 07:37:30 PM" "11/16/2018 11:59:18 PM" "04/17/2018 01:40:53 PM" "04/18/2018 10:24:34 AM" ...
+    ##  $ Call Dispatch Date Time                  : chr  "09/04/2018 06:19:05 PM" "11/16/2018 08:22:35 PM" "04/17/2018 06:00:51 AM" "04/18/2018 10:24:19 AM" ...
+    ##  $ Special Report (Pre-RMS)                 : chr  "" "" "" "" ...
+    ##  $ Person Involvement Type                  : chr  "Victim" "Victim" "Victim" "Victim" ...
+    ##  $ Victim Type                              : chr  "Individual" "Society/Public" "Individual" "Individual" ...
+    ##  $ Victim Name                              : chr  "LIN, HUAN" "CITY OF DALLAS" "ODEN, RUSSELL, DEAN" "NEIGHBOR, BENJAMIN, JOSEPH" ...
+    ##  $ Victim Race                              : chr  "Asian" "" "White" "White" ...
+    ##  $ Victim Ethnicity                         : chr  "Non-Hispanic or Latino" "" "Non-Hispanic or Latino" "Non-Hispanic or Latino" ...
+    ##  $ Victim Gender                            : chr  "Female" "" "Male" "Male" ...
+    ##  $ Victim Age                               : int  25 NA 82 31 NA 56 34 NA 58 NA ...
+    ##  $ Victim Age at Offense                    : int  25 NA 82 31 NA 56 34 NA 58 NA ...
+    ##  $ Victim Home Address                      : chr  "133 LAGUNA DR" "725 N JIM MILLER RD" "5SCHOOLHOUSE CT" "2660 N HASKELL AVE" ...
+    ##  $ Victim Apartment                         : chr  "" "" "" "1160" ...
+    ##  $ Victim Zip Code                          : chr  "75252" "75217" "63368" "75204" ...
+    ##  $ Victim City                              : chr  "DALLAS" "DALLAS" "O FALLON" "DALLAS" ...
+    ##  $ Victim State                             : chr  "TX" "TX" "MO" "TX" ...
+    ##  $ Victim Business Name                     : chr  "" "" "" "" ...
+    ##  $ Victim Business Address                  : chr  "" "" "" "" ...
+    ##  $ Victim Business Phone                    : chr  "" "" "" "" ...
+    ##  $ Responding Officer #1  Badge No          : chr  "9949" "10987" "5796" "7881" ...
+    ##  $ Responding Officer #1  Name              : chr  "MACIAS,OSCAR,IVAN" "KIM,DANIEL,K" "HERNANDEZ JR,BENITO,F" "CONWAY,MICHAEL,SHANE" ...
+    ##  $ Responding Officer #2 Badge No           : chr  "" "10983" "" "" ...
+    ##  $ Responding Officer #2  Name              : chr  "" "RAMIREZ,DANIEL" "" "" ...
+    ##  $ Reporting Officer Badge No               : chr  "9949" "10987" "5796" "7881" ...
+    ##  $ Assisting Officer Badge No               : chr  "" "" "" "" ...
+    ##  $ Reviewing Officer Badge No               : chr  "77397" "118918" "105273" "106845" ...
+    ##  $ Element Number Assigned                  : chr  "C691" "C325" "S324" "U155" ...
+    ##  $ Investigating Unit 1                     : chr  "" "" "" "" ...
+    ##  $ Investigating Unit 2                     : chr  "" "" "" "" ...
+    ##  $ Offense Status                           : chr  "Suspended" "Suspended" "Suspended" "Suspended" ...
+    ##  $ UCR Disposition                          : chr  "Suspended" "Suspended" "Suspended" "Suspended" ...
+    ##  $ Victim Injury Description                : chr  "" "" "" "" ...
+    ##  $ Victim Condition                         : chr  "" "" "" "" ...
+    ##  $ Modus Operandi (MO)                      : chr  "LOST PASSPORT" "ROS FOUND CRACK COCAINE IN A TRUCK" "WHILE ON PLANE IN MO. VICTIM HIT FRONT OF FOREHEAD THEN BACK OF H" "LOST PROPERTY" ...
+    ##  $ Family Offense                           : chr  "false" "false" "false" "false" ...
+    ##  $ Hate Crime                               : chr  "" "" "" "" ...
+    ##  $ Hate Crime Description                   : chr  "None" "None" "None" "None" ...
+    ##  $ Weapon Used                              : chr  "" "" "" "" ...
+    ##  $ Gang Related Offense                     : chr  "" "" "" "" ...
+    ##  $ Victim Package                           : logi  NA NA NA NA NA NA ...
+    ##  $ Drug Related Istevencident               : chr  "No" "Yes" "No" "No" ...
+    ##  $ RMS Code                                 : chr  "NA-99999999-X1" "NA-99999999-X3" "NA-99999999-W1" "NA-99999999-X1" ...
+    ##  $ Criminal Justice Information Service Code: int  99999999 99999999 99999999 99999999 99999999 99999999 99999999 99999999 99999999 99999999 ...
+    ##  $ Penal Code                               : chr  "No Offense" "No Offense" "UCR" "No Offense" ...
+    ##  $ UCR Offense Name                         : chr  "" "" "INJURED PUBLIC" "LOST" ...
+    ##  $ UCR Offense Description                  : chr  "" "" "ACCIDENTAL INJURY" "LOST PROPERTY" ...
+    ##  $ UCR Code                                 : int  NA NA 3300 4200 4300 NA 4200 NA NA NA ...
+    ##  $ Offense Type                             : chr  "" "" "NOT CODED" "NOT CODED" ...
+    ##  $ NIBRS Crime                              : chr  "MISCELLANEOUS" "MISCELLANEOUS" "MISCELLANEOUS" "MISCELLANEOUS" ...
+    ##  $ NIBRS Crime Category                     : chr  "MISCELLANEOUS" "MISCELLANEOUS" "MISCELLANEOUS" "MISCELLANEOUS" ...
+    ##  $ NIBRS Crime Against                      : chr  "MISCELLANEOUS" "MISCELLANEOUS" "MISCELLANEOUS" "MISCELLANEOUS" ...
+    ##  $ NIBRS Code                               : chr  "999" "999" "999" "999" ...
+    ##  $ NIBRS Group                              : chr  "D" "D" "D" "D" ...
+    ##  $ NIBRS Type                               : chr  "Not Coded" "Not Coded" "Not Coded" "Not Coded" ...
+    ##  $ Update Date                              : chr  "2018-09-06 09:27:31.0000000" "2018-11-17 23:20:26.0000000" "2018-06-11 10:03:26.0000000" "2018-06-11 10:03:27.0000000" ...
+    ##  $ X Coordinate                             : num  NA NA NA 2541289 NA ...
+    ##  $ Y Cordinate                              : num  NA NA NA 7020042 NA ...
+    ##  $ Zip Code                                 : int  75252 75208 63145 75040 75252 75216 75224 75249 75204 75043 ...
+    ##  $ City                                     : chr  "DALLAS" "ARLINGTON" "STLOUIS" "GARLAND" ...
+    ##  $ State                                    : chr  "TX" "TX" "MO" "TX" ...
+    ##   [list output truncated]
+
+The summary() function provides the detailed summary of data.
+
+Looking at the summary of data, we understand that there is one
+observation for each crime incident in the data frame. We have
+`{r echo = FALSE} nrow(crimedata)` (rows) of 100 variables (columns)
+where each row is a crime incident reported to the Dallas Police
+Department. For the ease of data analysis, we select only the fields
+that are neccessary.
 
     crimedata <- crimedata %>% select(`Incident Number w/year`,`Year of Incident`,`Type of Incident`,Beat,Division, `Type of Property`,`Date1 of Occurrence`,`Month1 of Occurence`,`Time1 of Occurrence`,`Day1 of the Week`,`Day1 of the Year`,`Victim Age`,`Victim Gender`, `Offense Status`, `UCR Offense Name`, `Victim Condition`, `Weapon Used`)
 
-Now with the selected varaibles, let us clean the data and make it ready
-for analysis.
+Now with the selected fields, we can start cleaning the data and make it
+ready for analysis.
 
-This dataset is supposed to have the crime reports from June 2014 till
-August 2019.
+-   Incident Number should be unique
 
-### Year cannot be more the 2019.
+Each incident has a unique identifier associated with it which is stored
+in the variable `Incident number w/ year`. However we have some
+instances where two or more rows have the same identifier. These
+duplicated instances should be removed. We use the duplicated() function
+to remove the duplicates.
 
-    current_year <- as.integer(format(Sys.Date(), "%Y"))
-    crimedata$`Year of Incident`[crimedata$`Year of Incident`> current_year] = current_year
+    crimedata <- crimedata[!duplicated(crimedata$`Incident Number w/year`), ]
 
-### Remove rows with `Year of Incident` 2005,2009,2010,2011,2013
+-   Date of Occurrence should be between June 2014 and 2019-11-26
 
-    crimedata <- crimedata %>% filter(`Year of Incident` %!in% c(2005, 2009, 2010, 2011, 2013))
+Date of Occurrence is a field that stores the date when the incident was
+reported. Hence it should be of type *Date*. The values should be from
+June 2014 to 2019-11-26.
 
-### Age - Reset values greater than 125 to 125
+    crimedata$`Date1 of Occurrence` <- as.Date(crimedata$`Date1 of Occurrence`, format = "%m/%d/%Y")
+    crimedata <- crimedata %>% filter(between(`Date1 of Occurrence`, as.Date("2014-06-01"), Sys.Date()))
+
+-   Year of Incident, Month of Occurrence, Day of the Week, Day of the
+    Year should be derived from `Date of Occurrence`
+
+It makes much sense to have the Year, Month, Day of week and Day of year
+values to be derived from the fields `Date of Occurrence`. This can be
+easily done with the *lubridate* package.
+
+    crimedata$`Year of Incident` <- with(crimedata, ifelse(`Year of Incident` == year(`Date1 of Occurrence`), `Year of Incident` , year(`Date1 of Occurrence`) ))
+    crimedata$`Month1 of Occurence` <- with(crimedata, ifelse(`Month1 of Occurence` == month(`Date1 of Occurrence`), `Month1 of Occurence`, month(`Date1 of Occurrence`)))
+    crimedata$`Day1 of the Year` <- with(crimedata, ifelse(`Day1 of the Year` == yday(`Date1 of Occurrence`), `Day1 of the Year`, yday(`Date1 of Occurrence`)))
+    crimedata$`Day1 of the Week` <- with(crimedata, ifelse(`Day1 of the Week` == wday(`Date1 of Occurrence`), `Day1 of the Week`, wday(`Date1 of Occurrence`)))
+
+-   Victim Age - Reset values greater than 125 to 125
+
+<!-- -->
 
     crimedata$`Victim Age`[crimedata$`Victim Age` > 125 ] = 125
 
-### Age - Age cannot be a negative value.
+-   Victim Age cannot be a negative value.
+
+<!-- -->
 
     crimedata$`Victim Age` <- ifelse(crimedata$`Victim Age`< 0 , abs(crimedata$`Victim Age`) , crimedata$`Victim Age`)
 
-### Division - Change all the values to Upper case and handle missing values
+The variable `Division` tells us in which part of the Dallas city the
+crime incident took place. It is categorized into 7 divisions - CENTRAL,
+NORTHEAST, SOUTH CENTRAL, SOUTHWEST, NORTH CENTRAL, NORTHWEST,
+SOUTHEAST. Therefore, it has to be of type *Factor*
+
+    unique(crimedata$Division)
+
+    ##  [1] "NORTH CENTRAL" "SOUTHWEST"     "CENTRAL"       "NORTHEAST"    
+    ##  [5] "NORTHWEST"     "SOUTHEAST"     "SOUTH CENTRAL" ""             
+    ##  [9] "SouthEast"     "NorthEast"     "Central"       "North Central"
+    ## [13] "SouthWest"     "South Central" "NorthWest"
+
+It's clear that the values here are not unique, hence converting them
+all to Upper case help make the analysis easy.
+
+-   Division - Change all the values to Upper case
+
+<!-- -->
 
     tmp <- crimedata %>% mutate(new_division = toupper(Division))
     crimedata$Division <- tmp$new_division
+    crimedata$Division <- as.factor(crimedata$Division)
 
-### Day of the Year - Handle missing values. Set Outliers. Values cannot be more than 366
+In order to find out how the crime rate trends throughout the year, we
+create a new varaiable named `Season` based on the `Month of Occurence`.
+It takes the values - *Spring*, *Summer*, *Fall*, *Winter* and is of
+type *Factor*.
 
-    crimedata$`Day1 of the Year`[which(is.na(crimedata$`Day1 of the Year`))] = 0
-    crimedata$`Day1 of the Year`[which(crimedata$`Day1 of the Year` > 366)] = 366
+-   Find the Season of the Year i.e., Spring/Summer/Fall/Winter
 
-### Find the Season of the Year i.e., Summer/Winter/Fall/Spring
+<!-- -->
 
-    crimedata <- crimedata %>% mutate(Season = ifelse(`Month1 of Occurence` %in% c("March", "April", "May"), "Spring", 
-                                         ifelse(`Month1 of Occurence`%in% c("June", "July", "August"), "Summer",
-                                               ifelse(`Month1 of Occurence` %in% c("September", "October", "November"), "Fall",
-                                                      ifelse(`Month1 of Occurence` %in% c("December", "January", "February"), "Winter", NA)))))
+    crimedata <- crimedata %>% mutate(Season = ifelse(`Month1 of Occurence` %in% c(3,4,5), "Spring", 
+                                         ifelse(`Month1 of Occurence`%in% c(6,7,8), "Summer",
+                                               ifelse(`Month1 of Occurence` %in% c(9,10,11), "Fall",
+                                                      ifelse(`Month1 of Occurence` %in% c(12,1,2), "Winter", NA)))))
+    crimedata$Season <- as.factor(crimedata$Season)
 
-### Column - Incident Number w/year has both incident number and year. Remove year
+-   Columns - Victim Gender, Victim Condition, Offense Status should of
+    type *Factor*
 
-    crimedata <- crimedata %>% mutate(`Incident Number` = sub("-.*", "", `Incident Number w/year`))
+<!-- -->
 
-### Now drop the column "Incident Number w/year"
+    crimedata$`Victim Gender` <- as.factor(crimedata$`Victim Gender`)
+    crimedata$`Victim Condition` <- as.factor(crimedata$`Victim Condition`)
+    crimedata$`Offense Status` <- as.factor(crimedata$`Offense Status`)
 
-    crimedata <- crimedata %>% select(-`Incident Number w/year`)
+We can also try to find out the time of day most crimes tend to happen.
+For this, we extract the hour of the day from the `Time of Occurrence`
+variable.
 
-### Extract the hour of the day when the crime took place.
+-   Extract the hour of the day when the crime took place.
+
+<!-- -->
 
     crimedata <- crimedata %>% mutate(`Hour of the Day` = sub(":.*", "",`Time1 of Occurrence`))
 
-### Handle the missing values for the column Type of Property
+Variable `Type of Property` stores the target item of the incident.
+Example : Motor vehicle, Apartment. It cannot take numeric values.
 
-    crimedata$`Type of Property`[which(crimedata$`Type of Property` == "")] = NA
+-   `Type of Property` cannot have numeric values
 
-### Type of Property cannot have numeric values
+<!-- -->
 
+    crimedata$`Type of Property` <- as.factor(crimedata$`Type of Property`)
     crimedata$`Type of Property` <- droplevels(crimedata$`Type of Property`, exclude = c(910,920,932,510))
 
-### Group similar offense types
+`UCR Offense Name` stores the type of crime incident that took place.
+For all the crimes that happened in the year 2019, there is no value for
+`UCR Offense Name`. This can be extracted from the column
+`Type of Incident`.
+
+To do this, we create a dataframe which maps the unique
+`Type of Incident` to its corresponding `UCR Offense Name` called
+*offenseNames*. Based on this mapping, we find all the missing values
+for the column `UCR Offense Names`.
+
+    temp <- crimedata[!duplicated(crimedata$`Type of Incident`), ]
+    offenseNames <- temp %>% dplyr::select(`Type of Incident`, `UCR Offense Name`)
+
+    offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "ARSON"))] <- "ARSON"
+    offenseNames$`UCR Offense Name`[which(grepl(paste(c("^GRAFFITI", "^CRUELTY TO", "^CRIM MISCHIEF"), collapse="|"),offenseNames$`Type of Incident` ))] <- "VANDALISM & CRIM MISCHIEF"
+    offenseNames$`UCR Offense Name`[which(grepl(paste(c("^ASSAULT", "^DEADLY CONDUCT"), collapse="|"),offenseNames$`Type of Incident` ))] <- "ASSAULT"
+    offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "BMV"))] <- "THEFT/BMV"
+    offenseNames$`UCR Offense Name`[which(grepl(paste(c("^CREDIT CARD", "^COMPUTER SECURITY", "^DECEPTIVE", "^FRAUD", "^THEFT OF SERVICE", "^FALSE STATEMENT", "^TAMPER W" , "^SECURE EXE", "^FAIL TO", "FALSE ALARM"), collapse="|"),offenseNames$`Type of Incident` ))] <- "FRAUD"
+    offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "CRIMINAL TRESPASS"))] <- "CRIMINAL TRESPASS"
+    offenseNames$`UCR Offense Name`[which(grepl(paste(c("^DELIVERY", "^MAN DEL", "^POSS CONT", "^POSS MARIJUANA"), collapse="|"),offenseNames$`Type of Incident` ))] <- "NARCOTICS & DRUG"
+    offenseNames$`UCR Offense Name`[which(grepl(paste(c("^DISORDERLY", "^DISRUPT", "^ILLUMINA", "^ONLINE IMPRESS", "^STALKING", "^SEX OFFENDERS", "^HARASSMENT"), collapse="|"),offenseNames$`Type of Incident` ))] <- "DISORDERLY CONDUCT"
+    offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "DWI"))] <- "DWI"
+    offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "ESCAPE"))] <- "ESCAPE"
+    offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "EVADING"))] <- "EVADING"
+    offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "FORGERY"))] <- "FORGE & COUNTERFEIT"
+    offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "KIDNAPPING"))] <- "KIDNAPPING"
+    offenseNames$`UCR Offense Name`[which(grepl(paste(c("^ILLEGAL", "^INTERFERE", "^INTERFER", "^FLEEING", "^MISAPP", "^OTHER OFFENSES", "^WARRANT"), collapse="|"),offenseNames$`Type of Incident` ))] <- "OTHERS"
+    offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "TRAFFICKING"))] <- "HUMAN TRAFFICKING"
+    offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "UNAUTHORIZED USE OF"))] <- "UUMV"
+    offenseNames$`UCR Offense Name`[which(grepl(paste(c("^UNLAWFULLY", "^UNLAWFUL", "^PROHIBITED"), collapse="|"),offenseNames$`Type of Incident` ))] <- "WEAPONS"
+    offenseNames$`UCR Offense Name`[which(grepl(paste(c("^VIO BOND", "^VIO PROTECT"), collapse="|"),offenseNames$`Type of Incident` ))] <- "OFFENSE AGAINST CHILD"
+    offenseNames$`UCR Offense Name`[which(grepl(paste(c("^TRAFFIC VIO", "^TRAF VIO"), collapse="|"),offenseNames$`Type of Incident` ))] <- "TRAFFIC VIOLATION"
+    offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "TRADEMARK"))] <- "FORGE & COUNTERFEIT"
+    offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "THEFT ORG"))] <- "THEFT ORG RETAIL"
+    offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "TERRORISTIC THREAT"))] <- "TERRORISTIC THREAT"
+    offenseNames$`UCR Offense Name`[which(startsWith(offenseNames$`Type of Incident`, "RESIST ARREST"))] <- "RESIST ARREST"
+    offenseNames$`UCR Offense Name`[which(grepl(paste(c("^MURDER", "^MANSLAUGHTER"), collapse="|"),offenseNames$`Type of Incident` ))] <- "MURDER"
+    offenseNames$`UCR Offense Name`[which(grepl(paste(c("^PUBLIC INTOX", "^PURCHASE FURN"), collapse="|"),offenseNames$`Type of Incident` ))] <- "DRUNK & DISORDERLY"
+    offenseNames$`UCR Offense Name`[which(grepl(paste(c("^ROBBERY *OF BUSINESS"), collapse="|"),offenseNames$`Type of Incident` ))] <- "ROBBERY-BUSINESS"
+    offenseNames$`UCR Offense Name`[which(grepl(paste(c("^ROBBERY *OF INDIVIDUAL"), collapse="|"),offenseNames$`Type of Incident` ))] <- "ROBBERY-INDIVIDUAL"
+    offenseNames$`UCR Offense Name` <- with(offenseNames, ifelse(`UCR Offense Name` == "" & grepl("^THEFT", `Type of Incident`), "OTHER THEFTs" , `UCR Offense Name` ))
+    offenseNames$`UCR Offense Name`[which(offenseNames$`UCR Offense Name` == "")] <- "OTHERS"
+
+    crimedata$`UCR Offense Name` <- offenseNames[match(crimedata$`Type of Incident`, offenseNames$`Type of Incident`),2]
+
+    length(unique(crimedata$`UCR Offense Name`))
+
+    ## [1] 49
+
+There are 50 different types of crime. We can group similar categories
+of crime into one and make this number smaller.
+
+-   Group similar offense types
+
+<!-- -->
 
     crimedata$`Crime Type` <- crimedata$`UCR Offense Name`
-    crimedata$`Crime Type` <- as.character(crimedata$`Crime Type`)
 
     crimedata$`Crime Type`[which(crimedata$`Crime Type` %in% c("ASSAULT", "AGG ASSAULT - NFV"))] = "ASSAULT"
     crimedata$`Crime Type`[which(crimedata$`Crime Type` %in% c("BURGLARY-BUSINESS", "BURGLARY-RESIDENCE"))] = "BURGLARY"
     crimedata$`Crime Type`[which(crimedata$`Crime Type` %in% c("THEFT/BMV", "THEFT/SHOPLIFT", "OTHER THEFTS", "THEFT ORG RETAIL", "EMBEZZLEMENT"))] = "THEFT"
     crimedata$`Crime Type`[which(crimedata$`Crime Type` %in% c("ROBBERY-BUSINESS", "ROBBERY-INDIVIDUAL"))] = "ROBBERY"
     crimedata$`Crime Type`[which(crimedata$`Crime Type` %in% c("ACCIDENT MV", "MOTOR VEHICLE ACCIDENT"))] = "ACCIDENT"
-    crimedata$`Crime Type`[which(crimedata$`Crime Type` %in% c("NARCOTICS & DRUGS", "DRUNK & DISORDERLY", "DWI", "LIQUOR OFFENSE", "INTOXICATION MANSLAUGHTER"))] = "DRUGS"
+    crimedata$`Crime Type`[which(crimedata$`Crime Type` %in% c("NARCOTICS & DRUGS", "NARCOTICS & DRUG" ,"DRUNK & DISORDERLY", "DWI", "LIQUOR OFFENSE", "INTOXICATION MANSLAUGHTER"))] = "DRUGS"
     crimedata$`Crime Type`[which(crimedata$`Crime Type` %in% c("TRAFFIC VIOLATION", "TRAFFIC FATALITY"))] = "TRAFFIC"
     crimedata$`Crime Type`[which(crimedata$`Crime Type` %in% c("MURDER", "SUDDEN DEATH&FOUND BODIES", "VANDALISM & CRIM MISCHIEF", "WEAPONS", "ARSON", "TERRORISTIC THREAT", "KIDNAPPING", "HUMAN TRAFFICKING", "OFFENSE AGAINST CHILD", "ORANIZED CRIME"))] = "VIOLENCE"
     crimedata$`Crime Type`[which(crimedata$`Crime Type` %in% c("DISORDERLY CONDUCT" ,"CRIMINAL TRESPASS", "EVADING", "RESIST ARREST", "FAIL TO ID", "GAMBLING", "ESCAPE", "FRAUD", "UUMV", "FORGE & COUNTERFEIT"))] = "NONVIOLENCE"
     crimedata$`Crime Type`[which(crimedata$`Crime Type` %in% c("NOT CODED", "LOST", "ANIMAL BITE", "OTHERS", "FOUND", "INJURED FIREARM", "INJURED HOME", "INJURED OCCUPA", "INJURED PUBLIC"))] = "OTHERS"
+    crimedata$`Crime Type` <- as.factor(crimedata$`Crime Type`)
+
+Similarly, let us group all the similar weapon categories and store it
+as *Factor*
+
+    crimedata$`Weapon Type` <- ""
+    crimedata$`Weapon Type`[which(grepl("gun",crimedata$`Weapon Used`, ignore.case = TRUE))] <- "Gun"
+    crimedata$`Weapon Type`[which(crimedata$`Weapon Used` %in% c("Rifle", "Missile/Rock"))] = "Gun"
+    crimedata$`Weapon Type`[which(crimedata$`Weapon Used` %in% c("Hands-Feet"))] = "Hands/Feet"
+    crimedata$`Weapon Type`[which(crimedata$`Weapon Used` %in% c("Vehicle", "MOTOR VEHICLE"))] = "Vehicle"
+    crimedata$`Weapon Type`[which(crimedata$`Weapon Used` %in% c("None"))] = "No Weapons"
+    crimedata$`Weapon Type`[which(crimedata$`Weapon Used` %in% c("Threats"))] = "Threat"
+    crimedata$`Weapon Type`[which(grepl("knife",crimedata$`Weapon Used`, ignore.case = TRUE))] = "Knife"
+    crimedata$`Weapon Type`[which(crimedata$`Weapon Used` %in% c("Other Cutting Stabbing Inst.", "SWITCHBLADE", "AXE", "ICE PICK"))] = "Knife"
+    crimedata$`Weapon Type`[which(grepl("fire",crimedata$`Weapon Used`, ignore.case = TRUE))] = "Fire"
+    crimedata$`Weapon Type`[which(crimedata$`Weapon Used` %in% c("Explosives", "Gas/Carbon Monoxide", "Burn/Scald"))] = "Knife"
+    crimedata$`Weapon Type`[which(grepl("drugs",crimedata$`Weapon Used`, ignore.case = TRUE))] = "Drugs"
+    crimedata$`Weapon Type`[which(crimedata$`Weapon Used` %in% c("ANY WEAPON OF FORCE DEADLY DISEASE, ETC", "Omission/Neglect"))] = "Drugs"
+    crimedata$`Weapon Type`[which(crimedata$`Weapon Used` %in% c("Other", "Blunt", "Stangulation", "Assault", "Crowbar", "Asphixation", "BlackJack/Club", "Omission"))] <- "Others"
+    crimedata$`Weapon Type`[which(crimedata$`Weapon Type` == "")] <- "Others"
+    crimedata$`Weapon Type` <- as.factor(crimedata$`Weapon Type`)
 
 ### Write the cleaned dataset to a file.
 
